@@ -1,2 +1,0 @@
-[console_scripts]
-grant-draft = grant_proposal_drafter.cli:main
