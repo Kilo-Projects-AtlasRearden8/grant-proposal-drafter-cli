@@ -77,6 +77,23 @@ class MockServerTests(unittest.TestCase):
         self.assertIn("Community Literacy Program", markdown)
         self.assertIn(DISCLAIMER, markdown)
 
+    def test_detail_values_flow_into_markdown(self):
+        client = LLMClient(base_url=self.base_url, model="mock-model")
+        drafter = GrantDrafter(client)
+        details = {
+            "title": "Sunshine Garden Project",
+            "organization": "Sunshine Neighborhood Association",
+            "amount": "$12,000",
+            "goals": "Grow fresh vegetables for the neighborhood food pantry.",
+            "activities": "Weekly gardening workshops and harvest days.",
+        }
+        sections = drafter.draft_all(details)
+        markdown = drafter.render_markdown(details, sections)
+        self.assertIn("# Sunshine Garden Project", markdown)
+        self.assertIn("Sunshine Neighborhood Association", markdown)
+        self.assertIn("$12,000", markdown)
+        self.assertIn(DISCLAIMER, markdown)
+
     def test_render_markdown_structure(self):
         client = LLMClient(base_url=self.base_url, model="mock-model")
         drafter = GrantDrafter(client)

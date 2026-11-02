@@ -10,23 +10,25 @@ none are stored to disk.
 
 Package `grant_proposal_drafter`:
 - `client.py` - `LLMClient` posts to `{base_url}/chat/completions` via stdlib
-  `urllib`, parses the OpenAI-compatible response, raises `LLMError` on connection
-  or shape failures.
+  `urllib`, parses the OpenAI-compatible response, raises `LLMError` on
+  connection or shape failures.
 - `drafter.py` - `GrantDrafter` drafts 8 sections (executive summary, statement
   of need, project description, goals and objectives, budget narrative,
   evaluation plan, sustainability plan, conclusion) with templates filled from
   project details; `render_markdown` wraps them with the education-only
-  disclaimer and project metadata.
+  disclaimer and project metadata header.
 - `cli.py` - argparse CLI (`grant-draft` / `python -m grant_proposal_drafter`)
   with `--input` JSON, `--output`, `--base-url`, `--model`, `--api-key`,
   `--timeout`, and per-detail flags; env var overrides
   (`GRANT_DRAFTER_BASE_URL`, `GRANT_DRAFTER_MODEL`, `GRANT_DRAFTER_API_KEY`).
+  Detail flags overlay `--input` JSON; missing details use sensible defaults.
 
-Tests: `tests/test_mock_endpoint.py` - 6 unittest tests against a local mock
+Tests: `tests/test_mock_endpoint.py` - 7 unittest tests against a local mock
 HTTP server (no network, no keys).
 
 Also included: `pyproject.toml` (entry point `grant-draft`), `README.md`,
-`LICENSE` (MIT, Copyright (c) 2026 Asdale Dynamics, LLC), `.gitignore`.
+`LICENSE` (MIT, Copyright (c) 2026 Asdale Dynamics, LLC), `.gitignore`,
+`STATUS.md`.
 
 Credit: Asdale Dynamics, LLC (Indiana) - beginner-friendly AI education, books,
 and practical open-source tools (dylanasdale.github.io).
@@ -66,16 +68,27 @@ grant-draft --base-url http://localhost:11434/v1 --model llama3.2 \
 
 ```
 python3 -m unittest discover -s tests -v
-Ran 6 tests - OK
+Ran 7 tests - OK
 ```
 
 Tests cover: client round-trip against a mock HTTP server, payload shape
 (stream off, model forwarded), connection-failure `LLMError`, all 8 sections
-produced, markdown structure (title, disclaimer, section headings), CLI writing
-the output file through the mock endpoint, and CLI exiting nonzero without
-creating a file when the endpoint is unreachable.
+produced, detail values flowing into Markdown metadata, markdown structure
+(title, disclaimer, section headings), CLI writing the output file through the
+mock endpoint, and CLI exiting nonzero without creating a file when the
+endpoint is unreachable.
 
 CLI help (`python3 -m grant_proposal_drafter --help`) prints correctly.
+
+Build:
+
+```
+pip install . --target /tmp/kilo/install_test --no-deps
+Successfully built grant-proposal-drafter
+Successfully installed grant-proposal-drafter-0.1.0
+```
+
+The `grant-draft` console script entry point runs and prints help correctly.
 
 ## Known gaps
 
@@ -87,3 +100,5 @@ CLI help (`python3 -m grant_proposal_drafter --help`) prints correctly.
   process.
 - No web UI, no interactive prompts, no saved-project library.
 - Default model `llama3.2` must be available on the configured Ollama instance.
+- Detail values (goals, activities, etc.) are sent to the LLM prompt; the
+  rendered Markdown header reflects title/organization/amount only.
