@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "grant-proposal-drafter"
+version = "0.1.0"
+description = "Local-first CLI that drafts grant proposal sections from project details using a configurable OpenAI-compatible endpoint (default Ollama). Education only; saves Markdown locally. No API keys required."
+requires-python = ">=3.8"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [{name = "Asdale Dynamics, LLC"}]
+keywords = ["grant", "proposal", "cli", "ollama", "local-llm", "education"]
+
+[project.scripts]
+grant-draft = "grant_proposal_drafter.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["grant_proposal_drafter*"]
